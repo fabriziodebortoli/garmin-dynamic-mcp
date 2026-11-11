@@ -60,7 +60,7 @@ async def test_invalidate_forces_new_exchange():
 
 
 @respx.mock
-@pytest.mark.parametrize("status", [400, 401, 403])
+@pytest.mark.parametrize("status", [400, 401, 403, 404])
 async def test_exchange_rejection_maps_to_key_rejected(status):
     respx.post(TOKEN_URL).mock(return_value=httpx.Response(status, json={"error": "x"}))
     with pytest.raises(GarminError) as exc:
@@ -132,3 +132,16 @@ async def test_token_cache_survives_a_clock_far_ahead_of_garmin():
     await manager.token()
     assert route.call_count == 1
     assert manager.key_expiry_warning is None
+
+
+@respx.mock
+async def test_a_deleted_key_answers_404_and_the_message_says_so():
+    """Garmin answers 404 'Personal API Key with ID ... does not exist' for a key that was deleted or replaced."""
+    respx.post(TOKEN_URL).mock(
+        return_value=httpx.Response(404, json={"message": "Personal API Key with ID x does not exist."})
+    )
+    with pytest.raises(GarminError) as exc:
+        await _manager().token()
+    assert exc.value.kind == "key_rejected"
+    assert "does not exist" in exc.value.message and "uvx garmin-dynamic-mcp setup" in exc.value.message
+    assert "ID" not in exc.value.message  # never echo what Garmin sent back

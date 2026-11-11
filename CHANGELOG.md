@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-11-11
+
+### Fixed
+
+- A key that Garmin no longer knows (deleted, or replaced by a newer one) makes the token exchange answer HTTP 404
+  ("Personal API Key ... does not exist"). It used to be reported as a generic Garmin error; it now says the key has
+  expired or was revoked and tells the user to create a new one and run `setup`.
+
 ## [0.2.1] - 2026-11-11
 
 ### Fixed

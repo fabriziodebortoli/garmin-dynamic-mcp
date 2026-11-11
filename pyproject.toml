@@ -1,6 +1,6 @@
 [project]
 name = "garmin-dynamic-mcp"
-version = "0.2.1"
+version = "0.2.2"
 description = "Dynamic, secure, read-only MCP server for the Garmin Connect Personal API"
 readme = "README.md"
 requires-python = ">=3.10"

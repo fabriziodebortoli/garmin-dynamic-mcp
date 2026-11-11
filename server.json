@@ -3,7 +3,7 @@
   "name": "io.github.fabriziodebortoli/garmin-dynamic-mcp",
   "title": "Garmin Dynamic MCP",
   "description": "Read-only access to your Garmin Connect data. Key in the OS keychain, self-updating catalog.",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "repository": {
     "url": "https://github.com/fabriziodebortoli/garmin-dynamic-mcp",
     "source": "github"
@@ -12,7 +12,7 @@
     {
       "registryType": "pypi",
       "identifier": "garmin-dynamic-mcp",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "runtimeHint": "uvx",
       "transport": {
         "type": "stdio"

@@ -93,6 +93,13 @@ class TokenManager:
         except httpx.TransportError as err:
             raise GarminError("network", "Cannot reach Garmin: check your connection and try again.") from err
         status = response.status_code
+        if status == 404:
+            # Garmin answers 404 "Personal API Key with ID ... does not exist" for a deleted or replaced key.
+            raise GarminError(
+                "key_rejected",
+                "Your Garmin key has expired or was revoked: Garmin says it does not exist (it may have been "
+                f"deleted or replaced by a newer key). Create a new key at {KEY_PAGE} and {SETUP_HINT}",
+            )
         if status in (400, 401, 403):
             raise GarminError(
                 "key_rejected",
