@@ -32,6 +32,11 @@ weight and more. It runs on your computer, with your own personal key, read-only
 
 That's all. To check that everything works at any time: `uvx garmin-dynamic-mcp doctor`.
 
+**Claude Desktop only, prefer clicking?** Download
+[`garmin-dynamic-mcp.mcpb`](https://github.com/fabriziodebortoli/garmin-dynamic-mcp/releases/latest/download/garmin-dynamic-mcp.mcpb)
+from the latest release and double-click it (or *Settings → Extensions → Advanced settings → Install Extension*). Claude
+Desktop asks for your key and stores it securely. It still needs [uv](https://docs.astral.sh/uv/) installed (step 1).
+
 ## What you can ask
 
 Claude composes the requests itself and does the maths and the charts, so you are not limited to preset questions:

@@ -51,7 +51,13 @@ a fresh run would stop at the duplicate upload.
 It opens an issue labelled `catalog-watch-broken` when it cannot read Garmin's specification (usually because Garmin changed the
 Swagger page). Fix `scripts/fetch_openapi.py` (`tests/fixtures` show what it expects), merge, and the next run closes the issue.
 
-## Claude Desktop extension (MCPB) — status: built, not yet released
+## Claude Desktop extension (MCPB) — status: verified in Claude Desktop, attached to every release
+
+Verified by the maintainer in Claude Desktop with the 0.2.1 bundle. `release.yml` builds it in the read-only `mcpb` job (after
+PyPI has the version) and `github-release` attaches `garmin-dynamic-mcp.mcpb` to every release; the README links the stable
+`releases/latest/download/garmin-dynamic-mcp.mcpb` URL. The rest of this section is the original background.
+
+### Background (before it was verified)
 
 `mcpb/` holds a one-click Claude Desktop extension (`server.type: "uv"`, the key is a `sensitive` user setting that Claude
 Desktop stores securely and passes as `GARMIN_API_KEY`). `uv run python scripts/build_mcpb.py X.Y.Z` validates and packs it

@@ -134,3 +134,24 @@ def _tracked_files():
         cwd=ROOT,
     )
     return result.stdout.splitlines()
+
+
+def test_release_builds_the_claude_desktop_extension_without_write_access():
+    text = _read(".github/workflows/release.yml")
+    job = text.split("  mcpb:", 1)[1].split("\n  github-release:", 1)[0]
+    assert "scripts/build_mcpb.py" in job and "upload-artifact" in job
+    assert "contents: write" not in job and "id-token" not in job  # an npm tool runs here: no powers
+
+
+def test_release_attaches_the_extension_after_pypi_has_the_version():
+    text = _read(".github/workflows/release.yml")
+    mcpb_job = text.split("  mcpb:", 1)[1].split("\n  github-release:", 1)[0]
+    assert "needs: [check, publish-pypi]" in mcpb_job
+    release_job = text.split("  github-release:", 1)[1].split("\n  mcp-registry:", 1)[0]
+    assert "needs: [check, publish-pypi, mcpb]" in release_job
+    assert "garmin-dynamic-mcp.mcpb" in release_job
+
+
+def test_readme_offers_the_one_click_extension_through_the_latest_release():
+    readme = _read("README.md")
+    assert "releases/latest/download/garmin-dynamic-mcp.mcpb" in readme
