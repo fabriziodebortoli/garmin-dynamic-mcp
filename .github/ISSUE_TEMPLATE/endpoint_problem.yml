@@ -1,0 +1,43 @@
+name: Endpoint problem
+description: A Garmin endpoint fails, returns odd data, or has a limit we do not know about
+labels: [endpoint]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Never paste your Garmin key or a token**, and trim personal values from any response you include.
+        Garmin's API is young and changes: reports like this keep `docs/garmin-api-findings.md` and the catalog accurate.
+  - type: input
+    id: path
+    attributes:
+      label: Endpoint path
+      placeholder: /usersummary-service/stats/steps/daily/{startDate}/{endDate}
+    validations:
+      required: true
+  - type: textarea
+    id: params
+    attributes:
+      label: Parameters you used
+      description: For example `startDate=2026-10-01, endDate=2026-10-28`.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: What you got
+      description: The exact error message, or what looked wrong in the data (field names are fine, personal values are not).
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: garmin-dynamic-mcp version (`uvx garmin-dynamic-mcp --version`)
+    validations:
+      required: true
+  - type: checkboxes
+    id: key-check
+    attributes:
+      label: Confirmation
+      options:
+        - label: I did not include my Garmin key, a token, or personal data in this issue.
+          required: true

@@ -1,0 +1,856 @@
+{
+  "source_url": "https://developer.garmin.com/gc-developer-program/personal/swagger-docs/",
+  "spec_sha256": "481dadc74076037e766f83b0a46aadf90066ea745832cc34924f4d26859833af",
+  "generated_at": "2026-11-10T21:04:08Z",
+  "endpoints": [
+    {
+      "path": "/activity-service/activity/{activityId}",
+      "summary": "Retrieves the activity summary, metadata, measurements, and split summary information for the specified activity.",
+      "params": [
+        {
+          "name": "activityId",
+          "location": "path",
+          "required": true,
+          "type": "integer",
+          "description": "The ID of the activity to retrieve the summary"
+        }
+      ],
+      "sensitive": false,
+      "verified": true,
+      "max_range_days": null,
+      "max_page_size": null,
+      "range_params": null
+    },
+    {
+      "path": "/activity-service/activity/{activityId}/workouts",
+      "summary": "Retrieves workouts performed during an activity",
+      "params": [
+        {
+          "name": "activityId",
+          "location": "path",
+          "required": true,
+          "type": "integer",
+          "description": "The ID of the activity for which to retrieve workouts"
+        }
+      ],
+      "sensitive": false,
+      "verified": true,
+      "max_range_days": null,
+      "max_page_size": null,
+      "range_params": null
+    },
+    {
+      "path": "/activitylist-service/activities/search/activities",
+      "summary": "Searches activities using the supplied filters and returns matching paginated activity summaries.",
+      "params": [
+        {
+          "name": "start",
+          "location": "query",
+          "required": false,
+          "type": "integer",
+          "description": "Zero-based offset of the first activity to return. Defaults to 0."
+        },
+        {
+          "name": "limit",
+          "location": "query",
+          "required": false,
+          "type": "integer",
+          "description": "Maximum number of activities to return. Defaults to 99."
+        },
+        {
+          "name": "favorite",
+          "location": "query",
+          "required": false,
+          "type": "integer",
+          "description": "Filter by favorite status: 1 returns favorites, 0 returns non-favorites, and -1 applies no favorite filter. Defaults to -1."
+        },
+        {
+          "name": "sortOrder",
+          "location": "query",
+          "required": false,
+          "type": "string",
+          "description": "Sort direction: asc for ascending or desc for descending, case-insensitive. Defaults to desc."
+        },
+        {
+          "name": "excludeChildren",
+          "location": "query",
+          "required": false,
+          "type": "boolean",
+          "description": "Whether to exclude child activities that have a parent activity, such as individual legs of a multisport activity. Defaults to true."
+        },
+        {
+          "name": "sortBy",
+          "location": "query",
+          "required": false,
+          "type": "string",
+          "description": "Activity field to sort by, such as name, distance, or duration. Defaults to startLocal, the activity's local start date and time."
+        },
+        {
+          "name": "search",
+          "location": "query",
+          "required": false,
+          "type": "string",
+          "description": "Text to search for in activity names and descriptions."
+        },
+        {
+          "name": "activityType",
+          "location": "query",
+          "required": false,
+          "type": "string",
+          "description": "Parent activity type key to include, such as running or cycling. Must identify a parent type, not a subtype."
+        },
+        {
+          "name": "activitySubType",
+          "location": "query",
+          "required": false,
+          "type": "string",
+          "description": "Activity subtype key to include. Must identify a child type and, if activityType is also provided, belong to that parent type. For example, use activitySubType=trail_running with activityType=running, or activitySubType=road_cycling with activityType=cycling."
+        },
+        {
+          "name": "eventType",
+          "location": "query",
+          "required": false,
+          "type": "string",
+          "description": "Event classification key to include, such as race, training, recreation, fitness, specialEvent, or uncategorized."
+        },
+        {
+          "name": "minDistance",
+          "location": "query",
+          "required": false,
+          "type": "integer",
+          "description": "Inclusive minimum activity distance, in meters."
+        },
+        {
+          "name": "maxDistance",
+          "location": "query",
+          "required": false,
+          "type": "integer",
+          "description": "Inclusive maximum activity distance, in meters."
+        },
+        {
+          "name": "minDuration",
+          "location": "query",
+          "required": false,
+          "type": "integer",
+          "description": "Inclusive minimum activity timer duration, in seconds."
+        },
+        {
+          "name": "maxDuration",
+          "location": "query",
+          "required": false,
+          "type": "integer",
+          "description": "Inclusive maximum activity timer duration, in seconds."
+        },
+        {
+          "name": "minElevation",
+          "location": "query",
+          "required": false,
+          "type": "integer",
+          "description": "Inclusive minimum total elevation gain for the activity, in meters."
+        },
+        {
+          "name": "maxElevation",
+          "location": "query",
+          "required": false,
+          "type": "integer",
+          "description": "Inclusive maximum total elevation gain for the activity, in meters."
+        },
+        {
+          "name": "startDate",
+          "location": "query",
+          "required": false,
+          "type": "string",
+          "description": "Inclusive earliest activity start date, based on the activity's local start time, in YYYY-MM-DD format."
+        },
+        {
+          "name": "endDate",
+          "location": "query",
+          "required": false,
+          "type": "string",
+          "description": "Inclusive latest activity start date, based on the activity's local start time, in YYYY-MM-DD format."
+        },
+        {
+          "name": "upperLatitude",
+          "location": "query",
+          "required": false,
+          "type": "number",
+          "description": "Northern latitude boundary of the bounding box for activity start locations, in decimal degrees. Provide all four latitude and longitude boundaries to apply this filter."
+        },
+        {
+          "name": "rightLongitude",
+          "location": "query",
+          "required": false,
+          "type": "number",
+          "description": "Eastern longitude boundary of the bounding box for activity start locations, in decimal degrees. Provide all four latitude and longitude boundaries to apply this filter."
+        },
+        {
+          "name": "lowerLatitude",
+          "location": "query",
+          "required": false,
+          "type": "number",
+          "description": "Southern latitude boundary of the bounding box for activity start locations, in decimal degrees. Provide all four latitude and longitude boundaries to apply this filter."
+        },
+        {
+          "name": "leftLongitude",
+          "location": "query",
+          "required": false,
+          "type": "number",
+          "description": "Western longitude boundary of the bounding box for activity start locations, in decimal degrees. Provide all four latitude and longitude boundaries to apply this filter."
+        },
+        {
+          "name": "lowerMaxDepth",
+          "location": "query",
+          "required": false,
+          "type": "integer",
+          "description": "Inclusive lower bound on the dive activity's maximum depth, in centimeters."
+        },
+        {
+          "name": "upperMaxDepth",
+          "location": "query",
+          "required": false,
+          "type": "integer",
+          "description": "Inclusive upper bound on the dive activity's maximum depth, in centimeters."
+        },
+        {
+          "name": "decoDive",
+          "location": "query",
+          "required": false,
+          "type": "boolean",
+          "description": "Filter by decompression dive status: true returns decompression dives and false returns activities marked as non-decompression dives. Omit to apply no decompression dive filter."
+        },
+        {
+          "name": "minElapsedDuration",
+          "location": "query",
+          "required": false,
+          "type": "integer",
+          "description": "Inclusive minimum total elapsed activity duration, including paused time, in seconds."
+        },
+        {
+          "name": "maxElapsedDuration",
+          "location": "query",
+          "required": false,
+          "type": "integer",
+          "description": "Inclusive maximum total elapsed activity duration, including paused time, in seconds."
+        },
+        {
+          "name": "minBottomTime",
+          "location": "query",
+          "required": false,
+          "type": "integer",
+          "description": "Inclusive minimum dive bottom time, in seconds."
+        },
+        {
+          "name": "maxBottomTime",
+          "location": "query",
+          "required": false,
+          "type": "integer",
+          "description": "Inclusive maximum dive bottom time, in seconds."
+        },
+        {
+          "name": "minAvgPower",
+          "location": "query",
+          "required": false,
+          "type": "integer",
+          "description": "Inclusive minimum average activity power, in watts."
+        },
+        {
+          "name": "excludedActivitySubType",
+          "location": "query",
+          "required": false,
+          "type": "array",
+          "description": "Activity subtype keys to exclude. Repeat this query parameter to exclude multiple subtypes."
+        },
+        {
+          "name": "requiredField",
+          "location": "query",
+          "required": false,
+          "type": "array",
+          "description": "Activity fields that must have a non-null value for an activity to be included. Repeat this query parameter to require multiple fields; all specified fields must be present."
+        }
+      ],
+      "sensitive": false,
+      "verified": true,
+      "max_range_days": null,
+      "max_page_size": 200,
+      "range_params": [
+        "startDate",
+        "endDate"
+      ]
+    },
+    {
+      "path": "/biometric-service/heartRateZones/v2",
+      "summary": "Retrieve the user's heart rate zone configuration.",
+      "params": [
+        {
+          "name": "generateDefaults",
+          "location": "query",
+          "required": false,
+          "type": "boolean",
+          "description": "Whether to generate default zones when the user has no configured zones."
+        }
+      ],
+      "sensitive": false,
+      "verified": true,
+      "max_range_days": null,
+      "max_page_size": null,
+      "range_params": null
+    },
+    {
+      "path": "/fitnessage-service/fitnessage/v2/{calendarDate}",
+      "summary": "Returns the lastest Fitness Age information as of the target calendar date.",
+      "params": [
+        {
+          "name": "calendarDate",
+          "location": "path",
+          "required": true,
+          "type": "string",
+          "description": "The target date; Fitness Age information returned will be the latest available as of this date."
+        },
+        {
+          "name": "fullHistoryScan",
+          "location": "query",
+          "required": false,
+          "type": "boolean",
+          "description": "Whether to scan the full history to find the latest Fitness Age information. If false, only the last 28 days relative to the target calendar date will be considered."
+        }
+      ],
+      "sensitive": false,
+      "verified": true,
+      "max_range_days": null,
+      "max_page_size": null,
+      "range_params": null
+    },
+    {
+      "path": "/goal-service/goal/user/effective/weightgoal/{startDate}/{endDate}",
+      "summary": "Get effective weight goals",
+      "params": [
+        {
+          "name": "startDate",
+          "location": "path",
+          "required": true,
+          "type": "string",
+          "description": "Beginning of the requested date interval."
+        },
+        {
+          "name": "endDate",
+          "location": "path",
+          "required": true,
+          "type": "string",
+          "description": "End of the requested date interval."
+        }
+      ],
+      "sensitive": false,
+      "verified": true,
+      "max_range_days": null,
+      "max_page_size": null,
+      "range_params": [
+        "startDate",
+        "endDate"
+      ]
+    },
+    {
+      "path": "/hrv-service/hrv/daily/{fromDate}/{toDate}",
+      "summary": "Get HRV daily summaries for a date range",
+      "params": [
+        {
+          "name": "fromDate",
+          "location": "path",
+          "required": true,
+          "type": "string",
+          "description": ""
+        },
+        {
+          "name": "toDate",
+          "location": "path",
+          "required": true,
+          "type": "string",
+          "description": ""
+        }
+      ],
+      "sensitive": false,
+      "verified": true,
+      "max_range_days": null,
+      "max_page_size": null,
+      "range_params": [
+        "fromDate",
+        "toDate"
+      ]
+    },
+    {
+      "path": "/hrv-service/hrv/{calendarDate}",
+      "summary": "Get HRV data for a specific date",
+      "params": [
+        {
+          "name": "calendarDate",
+          "location": "path",
+          "required": true,
+          "type": "string",
+          "description": ""
+        }
+      ],
+      "sensitive": false,
+      "verified": true,
+      "max_range_days": null,
+      "max_page_size": null,
+      "range_params": null
+    },
+    {
+      "path": "/nutrition-service/food/logs/{date}",
+      "summary": "Retrieves the user's daily nutrition summary for a specific calendar date. This includes the user's nutrition goals, nutrients consumed, and discrete events for the day. The response can optionally include meal-by-meal breakdowns of calories and other nutrients consumed by the user on the given date.",
+      "params": [
+        {
+          "name": "includeGoals",
+          "location": "query",
+          "required": false,
+          "type": "boolean",
+          "description": "Goals are included by default unless requested with includeGoals=false"
+        },
+        {
+          "name": "includeNutrition",
+          "location": "query",
+          "required": false,
+          "type": "boolean",
+          "description": "Nutrition information is included by default unless requested with includeNutrition=false"
+        },
+        {
+          "name": "includeMedia",
+          "location": "query",
+          "required": false,
+          "type": "boolean",
+          "description": "Images is included by default unless requested with includeMedia=false"
+        },
+        {
+          "name": "mealId",
+          "location": "query",
+          "required": false,
+          "type": "integer",
+          "description": "Id of the meal like id for Breakfast, Lunch, Snacks or Dinner"
+        },
+        {
+          "name": "date",
+          "location": "path",
+          "required": true,
+          "type": "string",
+          "description": "Date for which to retrieve the daily nutrition logs. Date must be in the YYYY-MM-DD format. The date is interpreted in the user's local timezone."
+        }
+      ],
+      "sensitive": true,
+      "verified": false,
+      "max_range_days": null,
+      "max_page_size": null,
+      "range_params": null
+    },
+    {
+      "path": "/periodichealth-service/menstrualcycle/dayview/{calendarDate}",
+      "summary": "Get detailed menstrual cycle day view",
+      "params": [
+        {
+          "name": "calendarDate",
+          "location": "path",
+          "required": true,
+          "type": "string",
+          "description": "The calendar date (yyyy-MM-dd) to retrieve data for."
+        },
+        {
+          "name": "todayDate",
+          "location": "query",
+          "required": false,
+          "type": "string",
+          "description": "The current calendar date (yyyy-MM-dd) from the caller's perspective, used as a reference point for predictions and calculations."
+        },
+        {
+          "name": "reducedResponse",
+          "location": "query",
+          "required": false,
+          "type": "boolean",
+          "description": "When true, returns a reduced/lightweight version of the response payload."
+        },
+        {
+          "name": "skipbm",
+          "location": "query",
+          "required": false,
+          "type": "boolean",
+          "description": "When true, excludes baby movement (kick count) data from the response."
+        },
+        {
+          "name": "includeAnalysis",
+          "location": "query",
+          "required": false,
+          "type": "boolean",
+          "description": "When true, includes menstrual cycle analysis data in the response."
+        }
+      ],
+      "sensitive": true,
+      "verified": false,
+      "max_range_days": null,
+      "max_page_size": null,
+      "range_params": null
+    },
+    {
+      "path": "/periodichealth-service/menstrualcycle/summary/{calendarDate}",
+      "summary": "Get menstrual cycle summary for a date",
+      "params": [
+        {
+          "name": "calendarDate",
+          "location": "path",
+          "required": true,
+          "type": "string",
+          "description": "The calendar date (yyyy-MM-dd) to retrieve data for."
+        }
+      ],
+      "sensitive": true,
+      "verified": false,
+      "max_range_days": null,
+      "max_page_size": null,
+      "range_params": null
+    },
+    {
+      "path": "/sleep-service/sleep/dailySleep",
+      "summary": "Retrieves daily sleep data for a calendar date",
+      "params": [
+        {
+          "name": "date",
+          "location": "query",
+          "required": false,
+          "type": "string",
+          "description": ""
+        }
+      ],
+      "sensitive": false,
+      "verified": true,
+      "max_range_days": null,
+      "max_page_size": null,
+      "range_params": null
+    },
+    {
+      "path": "/sleep-service/sleep/dailySleepSummariesByDate",
+      "summary": "Retrieves daily sleep summaries data for a date range, up to a maximum of 31 days.",
+      "params": [
+        {
+          "name": "startDate",
+          "location": "query",
+          "required": false,
+          "type": "string",
+          "description": ""
+        },
+        {
+          "name": "endDate",
+          "location": "query",
+          "required": false,
+          "type": "string",
+          "description": ""
+        }
+      ],
+      "sensitive": false,
+      "verified": true,
+      "max_range_days": 31,
+      "max_page_size": null,
+      "range_params": [
+        "startDate",
+        "endDate"
+      ]
+    },
+    {
+      "path": "/userprofile-service/userprofile/settings",
+      "summary": "Retrieve the user profile settings.",
+      "params": [],
+      "sensitive": false,
+      "verified": true,
+      "max_range_days": null,
+      "max_page_size": null,
+      "range_params": null
+    },
+    {
+      "path": "/usersummary-service/stats/hydration/daily/{startDate}/{endDate}",
+      "summary": "Get daily hydration data for a date range, up to a maximum of 31 days.",
+      "params": [
+        {
+          "name": "startDate",
+          "location": "path",
+          "required": true,
+          "type": "string",
+          "description": ""
+        },
+        {
+          "name": "endDate",
+          "location": "path",
+          "required": true,
+          "type": "string",
+          "description": ""
+        }
+      ],
+      "sensitive": false,
+      "verified": true,
+      "max_range_days": 31,
+      "max_page_size": null,
+      "range_params": [
+        "startDate",
+        "endDate"
+      ]
+    },
+    {
+      "path": "/usersummary-service/stats/steps/daily/{startDate}/{endDate}",
+      "summary": "Get daily steps data for a date range, up to a maximum of 28 days.",
+      "params": [
+        {
+          "name": "startDate",
+          "location": "path",
+          "required": true,
+          "type": "string",
+          "description": ""
+        },
+        {
+          "name": "endDate",
+          "location": "path",
+          "required": true,
+          "type": "string",
+          "description": ""
+        }
+      ],
+      "sensitive": false,
+      "verified": true,
+      "max_range_days": 28,
+      "max_page_size": null,
+      "range_params": [
+        "startDate",
+        "endDate"
+      ]
+    },
+    {
+      "path": "/usersummary-service/stats/stress/daily/{startDate}/{endDate}",
+      "summary": "Get daily stress data for a date range, up to a maximum of 28 days.",
+      "params": [
+        {
+          "name": "startDate",
+          "location": "path",
+          "required": true,
+          "type": "string",
+          "description": ""
+        },
+        {
+          "name": "endDate",
+          "location": "path",
+          "required": true,
+          "type": "string",
+          "description": ""
+        }
+      ],
+      "sensitive": false,
+      "verified": true,
+      "max_range_days": 28,
+      "max_page_size": null,
+      "range_params": [
+        "startDate",
+        "endDate"
+      ]
+    },
+    {
+      "path": "/usersummary-service/usersummary/daily",
+      "summary": "Get user summary data for a specific date. User summary data includes steps, calories, stress, Body Battery, and other wellness metrics for the given date.",
+      "params": [
+        {
+          "name": "calendarDate",
+          "location": "query",
+          "required": false,
+          "type": "string",
+          "description": ""
+        }
+      ],
+      "sensitive": false,
+      "verified": true,
+      "max_range_days": null,
+      "max_page_size": null,
+      "range_params": null
+    },
+    {
+      "path": "/usersummary-service/v2/dailysummaries",
+      "summary": "Get user daily summaries for a date range, up to a maximum of 1 year.",
+      "params": [
+        {
+          "name": "startDate",
+          "location": "query",
+          "required": false,
+          "type": "string",
+          "description": ""
+        },
+        {
+          "name": "endDate",
+          "location": "query",
+          "required": false,
+          "type": "string",
+          "description": ""
+        }
+      ],
+      "sensitive": false,
+      "verified": true,
+      "max_range_days": 366,
+      "max_page_size": null,
+      "range_params": [
+        "startDate",
+        "endDate"
+      ]
+    },
+    {
+      "path": "/weight-service/weight/all/{startDate}/{endDate}",
+      "summary": "Retrieve all weight entries for a specified date range.",
+      "params": [
+        {
+          "name": "startDate",
+          "location": "path",
+          "required": true,
+          "type": "string",
+          "description": "The start date(user's local calendar) of the range, inclusive. Format yyyy-MM-dd."
+        },
+        {
+          "name": "endDate",
+          "location": "path",
+          "required": true,
+          "type": "string",
+          "description": "The end date(user's local calendar) of the range, inclusive. Format yyyy-MM-dd."
+        }
+      ],
+      "sensitive": false,
+      "verified": true,
+      "max_range_days": 180,
+      "max_page_size": null,
+      "range_params": [
+        "startDate",
+        "endDate"
+      ]
+    },
+    {
+      "path": "/weight-service/weight/range/{startDate}/{endDate}",
+      "summary": "Retrieve weight summaries for a date range, including daily latest weights, the range average, and adjacent weights.",
+      "params": [
+        {
+          "name": "startDate",
+          "location": "path",
+          "required": true,
+          "type": "string",
+          "description": "The start date(user's local calendar) of the range, inclusive. Format yyyy-MM-dd."
+        },
+        {
+          "name": "endDate",
+          "location": "path",
+          "required": true,
+          "type": "string",
+          "description": "The end date(user's local calendar) of the range, inclusive. Format yyyy-MM-dd."
+        },
+        {
+          "name": "includeAll",
+          "location": "query",
+          "required": false,
+          "type": "boolean",
+          "description": "If true, include all weight entries for each day in the range. If false, only include the latest weight entry for each day."
+        }
+      ],
+      "sensitive": false,
+      "verified": true,
+      "max_range_days": null,
+      "max_page_size": null,
+      "range_params": [
+        "startDate",
+        "endDate"
+      ]
+    },
+    {
+      "path": "/wellness-service/wellness/bodyBattery/reports/daily",
+      "summary": "Returns daily Body Battery reports for a date range, up to a maximum of 31 days.",
+      "params": [
+        {
+          "name": "startDate",
+          "location": "query",
+          "required": false,
+          "type": "string",
+          "description": ""
+        },
+        {
+          "name": "endDate",
+          "location": "query",
+          "required": false,
+          "type": "string",
+          "description": ""
+        },
+        {
+          "name": "chunks",
+          "location": "query",
+          "required": false,
+          "type": "integer",
+          "description": "Number of time intervals each day is divided into; the response includes the lowest and highest Body Battery readings from each interval."
+        }
+      ],
+      "sensitive": false,
+      "verified": true,
+      "max_range_days": 31,
+      "max_page_size": null,
+      "range_params": [
+        "startDate",
+        "endDate"
+      ]
+    },
+    {
+      "path": "/wellness-service/wellness/daily/spo2acclimation/{calendarDate}",
+      "summary": "Returns daily SpO2 readings data for a given calendar date.",
+      "params": [
+        {
+          "name": "calendarDate",
+          "location": "path",
+          "required": true,
+          "type": "string",
+          "description": ""
+        }
+      ],
+      "sensitive": false,
+      "verified": true,
+      "max_range_days": null,
+      "max_page_size": null,
+      "range_params": null
+    },
+    {
+      "path": "/wellness-service/wellness/dailyHeartRate",
+      "summary": "Returns daily heart rate data for a given date.",
+      "params": [
+        {
+          "name": "date",
+          "location": "query",
+          "required": false,
+          "type": "string",
+          "description": ""
+        }
+      ],
+      "sensitive": false,
+      "verified": true,
+      "max_range_days": null,
+      "max_page_size": null,
+      "range_params": null
+    },
+    {
+      "path": "/wellnessactivity-service/activity/summary/range/{fromDate}/{untilDate}",
+      "summary": "Returns a list of wellness activity summaries for the given date range. The fromDate and untilDate are inclusive.",
+      "params": [
+        {
+          "name": "fromDate",
+          "location": "path",
+          "required": true,
+          "type": "string",
+          "description": ""
+        },
+        {
+          "name": "untilDate",
+          "location": "path",
+          "required": true,
+          "type": "string",
+          "description": ""
+        }
+      ],
+      "sensitive": false,
+      "verified": true,
+      "max_range_days": null,
+      "max_page_size": null,
+      "range_params": [
+        "fromDate",
+        "untilDate"
+      ]
+    }
+  ]
+}

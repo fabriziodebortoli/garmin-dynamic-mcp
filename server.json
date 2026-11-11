@@ -1,0 +1,30 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.fabriziodebortoli/garmin-dynamic-mcp",
+  "title": "Garmin Dynamic MCP",
+  "description": "Read-only access to your Garmin Connect data. Key in the OS keychain, self-updating catalog.",
+  "version": "0.2.0",
+  "repository": {
+    "url": "https://github.com/fabriziodebortoli/garmin-dynamic-mcp",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "garmin-dynamic-mcp",
+      "version": "0.2.0",
+      "runtimeHint": "uvx",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "GARMIN_API_KEY",
+          "description": "Optional: your Garmin Personal API key. If unset, the key stored by `garmin-dynamic-mcp setup` in the OS keychain is used.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}

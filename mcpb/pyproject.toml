@@ -1,0 +1,8 @@
+[project]
+name = "garmin-dynamic-mcp-bundle"
+version = "0.0.0"
+description = "Claude Desktop extension wrapper for garmin-dynamic-mcp"
+requires-python = ">=3.10"
+dependencies = [
+    "garmin-dynamic-mcp==0.0.0",
+]

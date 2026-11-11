@@ -1,0 +1,48 @@
+name: Bug report
+description: Something does not work as described
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Never paste your Garmin key or a token.** Remove personal values from anything you include.
+        Run `uvx garmin-dynamic-mcp doctor` first: it checks the usual problems and never prints your key.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: The question you asked, or the command you ran.
+    validations:
+      required: true
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Output of `uvx garmin-dynamic-mcp doctor`
+      render: text
+    validations:
+      required: false
+  - type: input
+    id: client
+    attributes:
+      label: MCP client and its version (for example Claude Desktop 1.2.3)
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: Operating system
+    validations:
+      required: true
+  - type: checkboxes
+    id: key-check
+    attributes:
+      label: Confirmation
+      options:
+        - label: I did not include my Garmin key, a token, or personal data in this issue.
+          required: true

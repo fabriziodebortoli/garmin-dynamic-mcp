@@ -1,0 +1,48 @@
+{
+  "manifest_version": "0.4",
+  "name": "garmin-dynamic-mcp",
+  "display_name": "Garmin Dynamic MCP",
+  "version": "0.0.0",
+  "description": "Read-only access to your Garmin Connect data (activities, sleep, HRV, steps, Body Battery and more).",
+  "long_description": "Ask Claude about your own Garmin data. Runs on your computer with your own Garmin Personal API key (create one at https://connect.garmin.com/app/settings/personalApiToken). Read-only; the endpoint catalog follows Garmin's API. Not affiliated with Garmin.",
+  "author": {
+    "name": "Fabrizio De Bortoli"
+  },
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fabriziodebortoli/garmin-dynamic-mcp"
+  },
+  "homepage": "https://github.com/fabriziodebortoli/garmin-dynamic-mcp",
+  "documentation": "https://github.com/fabriziodebortoli/garmin-dynamic-mcp#readme",
+  "support": "https://github.com/fabriziodebortoli/garmin-dynamic-mcp/issues",
+  "server": {
+    "type": "uv",
+    "entry_point": "src/server.py",
+    "mcp_config": {
+      "command": "uv",
+      "args": ["run", "--directory", "${__dirname}", "src/server.py"],
+      "env": {
+        "GARMIN_API_KEY": "${user_config.garmin_api_key}"
+      }
+    }
+  },
+  "user_config": {
+    "garmin_api_key": {
+      "type": "string",
+      "title": "Garmin Personal API key",
+      "description": "Create it at https://connect.garmin.com/app/settings/personalApiToken and paste it here. Claude Desktop stores it securely.",
+      "sensitive": true,
+      "required": true
+    }
+  },
+  "compatibility": {
+    "platforms": ["darwin", "linux", "win32"],
+    "runtimes": {
+      "python": ">=3.10"
+    }
+  },
+  "privacy_policies": ["https://www.garmin.com/en-US/privacy/connect/"],
+  "keywords": ["garmin", "garmin-connect", "fitness", "health", "running"],
+  "license": "MIT"
+}

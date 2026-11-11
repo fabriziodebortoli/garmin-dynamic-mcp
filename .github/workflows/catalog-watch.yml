@@ -1,0 +1,104 @@
+name: Catalog watch
+
+# Once a day: re-extract Garmin's API specification. If it changed, open (or update) one pull request
+# that regenerates the endpoint catalog and prepares a release. A human reviews and merges it.
+# If the extraction itself fails (Garmin changed the page), open an issue instead of staying silent.
+
+on:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: catalog-watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # push the catalog-update branch
+      pull-requests: write # open or update the pull request
+      issues: write # report a broken watcher
+      actions: write # dispatch ci.yml on the catalog-update branch
+    env:
+      # Not a secret. The write token is NOT set here: it is given only to the steps that call `gh`,
+      # so dependency code run by uv sync / pytest never sees it.
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+
+      - name: Fetch Garmin's specification
+        id: fetch
+        continue-on-error: true
+        run: uv run python scripts/fetch_openapi.py build/openapi.json
+
+      - name: Report a broken watcher
+        if: steps.fetch.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create catalog-watch-broken --color B60205 --description "The catalog watcher cannot read Garmin's spec" --force
+          body="The daily catalog watcher could not extract Garmin's OpenAPI specification. Garmin probably changed the Swagger page; scripts/fetch_openapi.py needs an update. Run: ${RUN_URL}"
+          existing=$(gh issue list --label catalog-watch-broken --state open --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body "$body"
+          else
+            gh issue create --title "Catalog watcher broken: cannot read Garmin's spec" --label catalog-watch-broken --body "$body"
+          fi
+          exit 1
+
+      - name: Close the broken-watcher issue once extraction works again
+        if: steps.fetch.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for number in $(gh issue list --label catalog-watch-broken --state open --json number --jq '.[].number'); do
+            gh issue close "$number" --comment "The watcher can read Garmin's spec again (${RUN_URL})."
+          done
+
+      - name: Compare with the committed catalog
+        id: check
+        if: steps.fetch.outcome == 'success'
+        run: echo "state=$(uv run python scripts/build_catalog.py build/openapi.json --check)" >> "$GITHUB_OUTPUT"
+
+      - name: Regenerate the catalog and prepare the release
+        if: steps.check.outputs.state == 'changed'
+        run: |
+          cp src/garmin_dynamic_mcp/catalog.json build/old_catalog.json
+          uv run python scripts/build_catalog.py build/openapi.json
+          uv run python scripts/prepare_catalog_release.py build/old_catalog.json src/garmin_dynamic_mcp/catalog.json
+          uv lock
+          uv sync --locked
+          uv run pytest -q
+
+      - name: Create the labels
+        if: steps.check.outputs.state == 'changed'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh label create catalog-update --color 0E8A16 --description "Garmin changed its API" --force
+
+      - name: Open or update the pull request
+        id: pr
+        if: steps.check.outputs.state == 'changed'
+        uses: peter-evans/create-pull-request@3ffccacd46053766916f087ce41d627c0b8cf2d1 # v8.1.3
+        with:
+          branch: catalog-update
+          delete-branch: true
+          title: "Catalog update: Garmin's API changed"
+          commit-message: "chore: update the endpoint catalog from Garmin's specification"
+          body-path: build/pr_body.md
+          labels: catalog-update
+
+      - name: Run CI on the pull request branch
+        # Pull requests opened with the default token do not trigger workflows, but workflow_dispatch does.
+        if: steps.pr.outputs.pull-request-number != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run ci.yml --ref catalog-update

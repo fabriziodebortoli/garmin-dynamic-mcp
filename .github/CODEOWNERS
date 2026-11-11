@@ -1,0 +1,7 @@
+# Everything needs the maintainer's review; the release machinery and the security-relevant code especially.
+*                                   @fabriziodebortoli
+/.github/                           @fabriziodebortoli
+/scripts/                           @fabriziodebortoli
+/src/garmin_dynamic_mcp/catalog.py  @fabriziodebortoli
+/src/garmin_dynamic_mcp/keystore.py @fabriziodebortoli
+/src/garmin_dynamic_mcp/clients.py  @fabriziodebortoli

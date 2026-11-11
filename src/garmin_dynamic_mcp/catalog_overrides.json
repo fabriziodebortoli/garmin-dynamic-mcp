@@ -1,0 +1,76 @@
+{
+  "/activity-service/activity/{activityId}": {
+    "verified": true
+  },
+  "/activity-service/activity/{activityId}/workouts": {
+    "verified": true
+  },
+  "/activitylist-service/activities/search/activities": {
+    "verified": true,
+    "max_page_size": 200
+  },
+  "/biometric-service/heartRateZones/v2": {
+    "verified": true
+  },
+  "/fitnessage-service/fitnessage/v2/{calendarDate}": {
+    "verified": true
+  },
+  "/goal-service/goal/user/effective/weightgoal/{startDate}/{endDate}": {
+    "verified": true
+  },
+  "/hrv-service/hrv/daily/{fromDate}/{toDate}": {
+    "verified": true
+  },
+  "/hrv-service/hrv/{calendarDate}": {
+    "verified": true
+  },
+  "/sleep-service/sleep/dailySleep": {
+    "verified": true
+  },
+  "/sleep-service/sleep/dailySleepSummariesByDate": {
+    "verified": true,
+    "max_range_days": 31
+  },
+  "/userprofile-service/userprofile/settings": {
+    "verified": true
+  },
+  "/usersummary-service/stats/hydration/daily/{startDate}/{endDate}": {
+    "verified": true,
+    "max_range_days": 31
+  },
+  "/usersummary-service/stats/steps/daily/{startDate}/{endDate}": {
+    "verified": true,
+    "max_range_days": 28
+  },
+  "/usersummary-service/stats/stress/daily/{startDate}/{endDate}": {
+    "verified": true,
+    "max_range_days": 28
+  },
+  "/usersummary-service/usersummary/daily": {
+    "verified": true
+  },
+  "/usersummary-service/v2/dailysummaries": {
+    "verified": true,
+    "max_range_days": 366
+  },
+  "/weight-service/weight/all/{startDate}/{endDate}": {
+    "verified": true,
+    "max_range_days": 180
+  },
+  "/weight-service/weight/range/{startDate}/{endDate}": {
+    "verified": true
+  },
+  "/wellness-service/wellness/bodyBattery/reports/daily": {
+    "verified": true,
+    "max_range_days": 31
+  },
+  "/wellness-service/wellness/daily/spo2acclimation/{calendarDate}": {
+    "verified": true
+  },
+  "/wellness-service/wellness/dailyHeartRate": {
+    "verified": true
+  },
+  "/wellnessactivity-service/activity/summary/range/{fromDate}/{untilDate}": {
+    "verified": true
+  }
+}

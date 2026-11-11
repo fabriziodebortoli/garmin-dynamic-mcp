@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Garmin Dynamic MCP</title>
+  <meta name="description" content="A read-only MCP server for Garmin Connect that updates itself when Garmin's API changes and keeps your key in the OS keychain.">
+  <link rel="icon" href="icon.png" type="image/png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <div class="brand"><img src="icon.png" alt="" width="36" height="36"><span>Garmin Dynamic MCP</span></div>
+      <h1>Your Garmin data, in your AI assistant.</h1>
+      <p class="lead">A read-only MCP server for Garmin Connect that updates itself when Garmin's API changes, and keeps your key in the OS keychain. Works with Claude, Cursor, VS Code and more.</p>
+      <div class="actions">
+        <a class="button" href="https://connect.garmin.com/app/settings/personalApiToken">Create your Garmin key</a>
+        <a class="button secondary" href="https://github.com/fabriziodebortoli/garmin-dynamic-mcp">View on GitHub</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="quick-start">
+      <div class="wrap">
+        <h2>Quick start</h2>
+        <ol class="steps">
+          <li>
+            <strong>Install <a href="https://docs.astral.sh/uv/">uv</a></strong>, which fetches Python and everything else by itself:
+            <code>winget install astral-sh.uv</code> on Windows, <code>brew install uv</code> on macOS.
+          </li>
+          <li>
+            <strong>Run the setup</strong> in a new terminal. It opens Garmin's key page, reads the key from your clipboard,
+            checks it, stores it in your system keychain and configures your MCP clients.
+            <pre><code>uvx garmin-dynamic-mcp setup</code></pre>
+          </li>
+          <li><strong>Restart your client</strong> and ask: <em>"How many km did I run last week?"</em></li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="why">
+      <div class="wrap">
+        <h2>Why this one</h2>
+        <div class="grid three">
+          <div class="card">
+            <h3>It follows Garmin's API</h3>
+            <p>A daily check reads Garmin's published specification. When something changes, a pull request regenerates the endpoint catalog, a human reviews it, and a release ships. You are told in the conversation when to update.</p>
+          </div>
+          <div class="card">
+            <h3>Your key stays safe</h3>
+            <p>The key lives in the OS keychain, never in a JSON file. Only <code>GET</code> requests, only to Garmin, only to reviewed endpoints. Nutrition and cycle data are off by default.</p>
+          </div>
+          <div class="card">
+            <h3>One command</h3>
+            <p><code>setup</code> opens the key page, verifies the key and configures every client it finds, backing up files and never overwriting what it cannot parse.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="ask">
+      <div class="wrap">
+        <h2>What you can ask</h2>
+        <p>Claude composes the requests and does the maths and the charts, so you are not limited to preset questions.</p>
+        <ul class="plain">
+          <li>How many km did I run last week?</li>
+          <li>What is my average cadence over my last ten runs?</li>
+          <li>Chart the km I ran each day last month.</li>
+          <li>How did my sleep and HRV change over the last 90 days?</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="clients">
+      <div class="wrap">
+        <h2>Works with</h2>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Client</th><th>Configured by <code>setup</code></th></tr></thead>
+            <tbody>
+              <tr><td>Claude Desktop</td><td>Yes</td></tr>
+              <tr><td>Claude Code</td><td>Yes</td></tr>
+              <tr><td>Cursor</td><td>Yes</td></tr>
+              <tr><td>VS Code</td><td>Yes</td></tr>
+              <tr><td>Windsurf / Devin Desktop</td><td>Yes, when its config file exists</td></tr>
+              <tr><td>Gemini CLI, Codex CLI</td><td>Yes</td></tr>
+              <tr><td>Anything else</td><td>Prints the snippet to paste</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="security">
+      <div class="wrap">
+        <h2>Security and privacy</h2>
+        <ul class="plain">
+          <li>Runs on your computer with your own key. The key is sent only to Garmin.</li>
+          <li>Read-only. No free-form URLs: every request goes to a path in the reviewed catalog.</li>
+          <li>Client configurations pin an exact version. The server tells you when a newer one exists; you decide.</li>
+          <li>Releases are built by CI and published to PyPI with trusted publishing and attestations.</li>
+        </ul>
+        <p><a href="https://github.com/fabriziodebortoli/garmin-dynamic-mcp/blob/main/docs/security.md">Read the threat model</a>
+        &middot; <a href="https://github.com/fabriziodebortoli/garmin-dynamic-mcp/blob/main/SECURITY.md">Report a vulnerability</a></p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p><a href="https://github.com/fabriziodebortoli/garmin-dynamic-mcp">GitHub</a> &middot;
+      <a href="https://pypi.org/project/garmin-dynamic-mcp/">PyPI</a> &middot;
+      <a href="https://github.com/fabriziodebortoli/garmin-dynamic-mcp/blob/main/CHANGELOG.md">Changelog</a> &middot; MIT license</p>
+      <p>An independent open-source project, not affiliated with, endorsed by or supported by Garmin Ltd. "Garmin" and "Garmin Connect" are trademarks of Garmin Ltd. The Personal API is for accessing your own data with your own key.</p>
+    </div>
+  </footer>
+</body>
+</html>

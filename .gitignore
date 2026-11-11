@@ -1,0 +1,14 @@
+.venv
+__pycache__
+.pytest_cache
+.env
+*.fit
+.superpowers/
+dist/
+*.egg-info/
+
+# Local working notes (not published)
+docs/project_spec.md
+build/
+docs/launch-checklist.md
+.coverage
