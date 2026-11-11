@@ -1,12 +1,17 @@
 """Regression tests for the findings of the whole-branch review (CLI behavior)."""
 
+import io
+import time
+
+import httpx
 import respx
 from keyring.errors import KeyringLocked, PasswordSetError
-from test_cli import KEY, UVX, cursor_config, make_deps, output, token_ok
+from test_cli import KEY, UVX, cursor_config, desktop_config, make_deps, output, token_ok
 from test_clients import FakeRun
 from test_clients_review import FOREIGN_LISTING, LOOKALIKE_LISTING
 
 from garmin_dynamic_mcp import cli
+from garmin_dynamic_mcp.auth import TOKEN_URL
 from garmin_dynamic_mcp.cli import main
 from garmin_dynamic_mcp.keystore import ACCOUNT, SERVICE
 
@@ -113,3 +118,81 @@ def test_update_leaves_a_foreign_cli_server_alone(tmp_path):
     deps, _ = make_deps(tmp_path, which=CLAUDE_WHICH, run=run)
     assert main(["update"], deps) == 0
     assert run.mutations() == []
+
+
+# --- clearer key entry and progress feedback ----------------------------------------------------
+
+
+class _FakeTty(io.StringIO):
+    def isatty(self):
+        return True
+
+
+@respx.mock
+def test_setup_prompt_says_that_enter_uses_the_clipboard(tmp_path):
+    token_ok()
+    prompts = []
+
+    def getpass(prompt):
+        prompts.append(prompt)
+        return ""
+
+    deps, _ = make_deps(tmp_path)
+    deps.getpass = getpass
+    assert main(["setup", "--clients", "none"], deps) == 0
+    assert "Enter" in prompts[0] and "clipboard" in prompts[0] and "paste" in prompts[0].lower()
+    assert "Copy" in deps.out.getvalue()  # the instructions name the Copy button on Garmin's page
+
+
+@respx.mock
+def test_setup_reports_how_many_characters_it_read_from_the_clipboard(tmp_path):
+    token_ok()
+    deps, _ = make_deps(tmp_path)  # clipboard holds "  test-key\n": 8 characters once cleaned
+    assert main(["setup", "--clients", "none"], deps) == 0
+    assert f"Read {len(KEY)} characters from the clipboard" in output(deps)
+    assert KEY not in output(deps)
+
+
+@respx.mock
+def test_pasted_key_with_control_characters_is_cleaned_before_it_is_sent(tmp_path):
+    route = token_ok()
+    deps, _ = make_deps(tmp_path, secrets=["\x16test-key\x16"])
+    assert main(["setup", "--clients", "none"], deps) == 0
+    assert route.calls.last.request.headers["Authorization"] == f"ApiKey {KEY}"
+    assert f"Received {len(KEY)} characters" in output(deps)
+
+
+@respx.mock
+def test_rejected_key_message_gives_its_length_and_suggests_the_clipboard(tmp_path):
+    respx.post(TOKEN_URL).mock(return_value=httpx.Response(401))
+    deps, _ = make_deps(tmp_path, secrets=["short-key", "short-key", "short-key"])
+    assert main(["setup", "--clients", "none"], deps) == 1
+    text = output(deps)
+    assert "9 characters" in text and "clipboard" in text and "short-key" not in text
+
+
+@respx.mock
+def test_setup_announces_each_client_before_working_on_it(tmp_path):
+    token_ok()
+    deps, _ = make_deps(tmp_path)
+    desktop_config(deps).parent.mkdir(parents=True)
+    assert main(["setup", "--clients", "claude-desktop", "--yes"], deps) == 0
+    text = output(deps)
+    assert text.index("Configuring Claude Desktop") < text.index("Claude Desktop - written")
+
+
+def test_working_prints_one_line_without_a_terminal(tmp_path):
+    deps, _ = make_deps(tmp_path)
+    with cli._working(deps, "Checking the key with Garmin"):
+        pass
+    assert deps.out.getvalue() == "  ... Checking the key with Garmin\n"
+
+
+def test_working_animates_and_cleans_up_on_a_terminal(tmp_path):
+    deps, _ = make_deps(tmp_path)
+    deps.out = _FakeTty()
+    with cli._working(deps, "Configuring Claude Code"):
+        time.sleep(0.25)
+    shown = deps.out.getvalue()
+    assert "Configuring Claude Code" in shown and shown.endswith("\r")
+    assert shown.count("\r") >= 2  # redrawn at least once, then cleared

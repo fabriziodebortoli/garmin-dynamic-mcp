@@ -10,8 +10,10 @@ import re
 import shutil
 import subprocess
 import sys
+import threading
 import webbrowser
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Iterator, Mapping
+from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -41,6 +43,7 @@ from .clients import (
 )
 from .errors import GarminError
 from .keystore import KeychainUnavailable, delete_key, load_key, save_key
+from .secret import read_secret
 from .server import serve
 from .updates import PYPI_URL, parse_version
 from .version import __version__
@@ -82,11 +85,20 @@ class Deps:
     now: Callable[[], datetime]
 
 
+def _secret_prompt(prompt: str) -> str:
+    """Hidden input. On a Windows console use a reader that understands Ctrl+V and shows one * per character."""
+    if sys.platform == "win32" and sys.stdin is not None and sys.stdin.isatty():
+        import msvcrt
+
+        return read_secret(prompt, out=sys.stdout, getwch=msvcrt.getwch, read_clipboard=clipboard.read_clipboard)
+    return getpass.getpass(prompt)
+
+
 def default_deps() -> Deps:
     return Deps(
         stdin_isatty=lambda: sys.stdin is not None and sys.stdin.isatty(),
         read_stdin=lambda: sys.stdin.read(),
-        getpass=getpass.getpass,
+        getpass=_secret_prompt,
         ask=input,
         out=sys.stdout,
         err=sys.stderr,
@@ -106,6 +118,35 @@ def default_deps() -> Deps:
 async def verify_key(key: str, http: httpx.AsyncClient) -> float:
     """Exchange the key for a token; return the token lifetime in seconds. Raises GarminError."""
     return token_lifetime(await TokenManager(key, http).token())
+
+
+@contextmanager
+def _working(deps: Deps, text: str) -> Iterator[None]:
+    """Show that something is in progress: one line without a terminal, a small spinner on a terminal."""
+    isatty = getattr(deps.out, "isatty", None)
+    if not (callable(isatty) and isatty()):
+        print(f"  ... {text}", file=deps.out)
+        yield
+        return
+    stop = threading.Event()
+
+    def spin() -> None:
+        frames, index = "|/-\\", 0
+        while not stop.is_set():
+            deps.out.write(f"\r  {frames[index % len(frames)]} {text}")
+            deps.out.flush()
+            index += 1
+            stop.wait(0.1)
+
+    thread = threading.Thread(target=spin, daemon=True)
+    thread.start()
+    try:
+        yield
+    finally:
+        stop.set()
+        thread.join()
+        deps.out.write("\r" + " " * (len(text) + 6) + "\r")
+        deps.out.flush()
 
 
 def _say(deps: Deps, text: str = "") -> None:
@@ -174,18 +215,26 @@ def _read_key(deps: Deps, args: argparse.Namespace) -> tuple[str, bool] | None:
     if args.key_stdin:
         raw, from_clipboard = deps.read_stdin(), False
     else:
-        raw = deps.getpass("Paste the key and press Enter, or just press Enter to read it from the clipboard: ")
+        raw = deps.getpass("Press Enter to read the key from your clipboard (or paste it here, hidden): ")
         from_clipboard = not raw.strip()
         if from_clipboard:
             raw = deps.read_clipboard() or ""
             if not raw.strip():
-                print("The clipboard is empty or could not be read: paste the key instead.", file=deps.err)
+                print(
+                    "The clipboard is empty or could not be read: copy the key again with the Copy button on "
+                    "Garmin's page, or paste it at the prompt.",
+                    file=deps.err,
+                )
                 return None
     try:
-        return normalize_key(raw), from_clipboard
+        key = normalize_key(raw)
     except GarminError as err:
         print(err.message, file=deps.err)
         return None
+    if not args.key_stdin:
+        where = "Read {n} characters from the clipboard." if from_clipboard else "Received {n} characters."
+        _say(deps, "  " + where.format(n=len(key)))
+    return key, from_clipboard
 
 
 async def _acquire_key(deps: Deps, args: argparse.Namespace) -> tuple[str, bool] | None:
@@ -197,11 +246,17 @@ async def _acquire_key(deps: Deps, args: argparse.Namespace) -> tuple[str, bool]
                 continue
             key, from_clipboard = got
             try:
-                lifetime = await verify_key(key, http)
+                with _working(deps, "Checking the key with Garmin"):
+                    lifetime = await verify_key(key, http)
             except GarminError as err:
                 print(err.message, file=deps.err)
                 if err.kind != "key_rejected":
                     return None
+                print(
+                    f"The key had {len(key)} characters. If you pasted it, try again and just press Enter to use the "
+                    "clipboard instead (copy the key with the Copy button on Garmin's page).",
+                    file=deps.err,
+                )
                 continue
             hours = int(lifetime // 3600)
             _say(
@@ -226,7 +281,7 @@ async def cmd_setup(deps: Deps, args: argparse.Namespace) -> int:
     if not args.key_stdin:
         _say(deps, "1. Create a Personal API key on Garmin Connect (opening it in your browser):")
         _say(deps, f"   {KEY_PAGE}")
-        _say(deps, "2. Copy the key, then come back here.")
+        _say(deps, '2. Click the "Copy" button next to your new key, then come back to this window.')
         deps.open_browser(KEY_PAGE)
     got = await _acquire_key(deps, args)
     if got is None:
@@ -262,7 +317,10 @@ async def cmd_setup(deps: Deps, args: argparse.Namespace) -> int:
     else:
         _say(deps, "Configuring MCP clients:")
         for spec in selected:
-            for result in _configure(deps, spec, uvx, args.yes):
+            suffix = " (this can take a few seconds)" if spec.kind == "cli" else ""
+            with _working(deps, f"Configuring {spec.name}{suffix}"):
+                results = _configure(deps, spec, uvx, args.yes)
+            for result in results:
                 _print_result(deps, result)
     _say(deps)
     _say(deps, f'Restart your MCP client(s), then ask: "{FIRST_QUESTION}"')
@@ -317,7 +375,8 @@ async def cmd_doctor(deps: Deps, _args: argparse.Namespace) -> int:
         if spec.kind == "cli":
             if not (spec.cli and deps.which(spec.cli)):
                 continue
-            registered = cli_entry(spec, deps.run, deps.which)
+            with _working(deps, f"Checking {spec.name}"):
+                registered = cli_entry(spec, deps.run, deps.which)
             if registered is None:
                 line("WARN", f"{spec.name}: garmin is not registered.")
             elif "garmin-dynamic-mcp" not in registered:
@@ -349,7 +408,8 @@ async def cmd_update(deps: Deps, _args: argparse.Namespace) -> int:
     for spec in _clients(deps):
         if spec.kind == "cli":
             uvx = deps.which("uvx")
-            registered = cli_entry(spec, deps.run, deps.which) if uvx else None
+            with _working(deps, f"Checking {spec.name}"):
+                registered = cli_entry(spec, deps.run, deps.which) if uvx else None
             if uvx and registered and "garmin-dynamic-mcp" in registered:
                 found = _PIN_RE.search(registered)
                 if not found or found.group(1) != __version__:

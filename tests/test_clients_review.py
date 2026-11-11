@@ -102,16 +102,21 @@ def test_rewrite_follows_a_symlinked_config(tmp_path):
     assert "garmin" in json.loads(real.read_text(encoding="utf-8"))["mcpServers"]
 
 
-FOREIGN_LISTING = "Checking MCP server health...\n\ngarmin: npx other-garmin-server - ✓ Connected\n"
-OURS_LISTING = "garmin: /bin/uvx garmin-dynamic-mcp==0.1.0 - ✓ Connected\n"
-LOOKALIKE_LISTING = "garmin-connect: npx something - ✓ Connected\ngarminx: foo\n"
+# Output of `claude mcp get garmin` (exit 0) for a server that exists; an unknown name exits 1 with no usable output.
+FOREIGN_LISTING = (
+    "garmin:\n  Scope: User config\n  Status: ✔ Connected\n  Type: stdio\n  Command: npx\n  Args: other-garmin-server\n"
+)
+OURS_LISTING = "garmin:\n  Scope: User config\n  Type: stdio\n  Command: /bin/uvx\n  Args: garmin-dynamic-mcp==0.1.0\n"
+LOOKALIKE_LISTING = (
+    ""  # `mcp get garmin` asks for the exact name, so a server called garmin-connect is simply not found
+)
 
 
 def _which(name):
     return f"/bin/{name}"
 
 
-def test_cli_entry_matches_the_exact_name_only():
+def test_cli_entry_returns_the_details_of_an_existing_server_and_none_otherwise():
     assert cli_entry(CLAUDE, FakeRun(listing=LOOKALIKE_LISTING), _which) is None
     assert "other-garmin-server" in cli_entry(CLAUDE, FakeRun(listing=FOREIGN_LISTING), _which)
     assert cli_entry(CLAUDE, FakeRun(), lambda _n: None) is None
@@ -161,3 +166,12 @@ def test_rewrite_copies_the_original_mode_to_the_new_file_and_backup(tmp_path, m
     assert [src for src, _dst in copied_modes] == [path]
     assert [src for src, _dst in copied_files] == [path]
     assert not list(tmp_path.glob("*.tmp-garmin"))
+
+
+def test_cli_clients_never_run_mcp_list_because_it_health_checks_every_server():
+    """`claude mcp list` took ~18 s with 60 servers registered; `mcp get garmin` takes a couple of seconds."""
+    run = FakeRun(listing=OURS_LISTING)
+    configure_cli(CLAUDE, UVX, "0.2.0", run, _which, confirm_replace=lambda _l: True)
+    cli_entry(CLAUDE, run, _which)
+    assert all(call[1:3] != ["mcp", "list"] for call in run.calls)
+    assert run.calls[0] == ["/bin/claude", "mcp", "get", "garmin"]

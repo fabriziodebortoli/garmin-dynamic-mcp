@@ -6,6 +6,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-11-11
+
+### Fixed
+
+- `setup`: the key prompt now says that pressing Enter reads the key from the clipboard, shows `*` for each character
+  and how many characters were received, and accepts Ctrl+V on Windows (pasting into the hidden prompt used to produce
+  a key that Garmin rejected as expired). Control characters left by a paste are dropped.
+- `setup`: a key that Garmin rejects now reports its length and suggests the clipboard route.
+- `setup`, `doctor` and `update`: Claude Code and Codex are checked with `mcp get garmin` instead of `mcp list`, which
+  health-checks every registered server and took about 18 seconds with 60 servers (now about 3 seconds).
+- `setup`, `doctor` and `update` show what they are doing (a spinner on a terminal) while a client is configured.
+
 ## [0.2.0] - 2026-11-10
 
 First public release.

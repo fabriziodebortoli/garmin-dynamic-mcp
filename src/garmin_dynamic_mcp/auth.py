@@ -20,7 +20,9 @@ _FULL_LIFETIME_S = 24 * 3600
 
 def normalize_key(raw: str | None) -> str:
     """Strip spaces, line breaks and quotes pasted by mistake."""
-    key = (raw or "").replace("﻿", "").strip().strip("\"'").strip()
+    # drop the BOM and control characters a paste can leave behind (for example the \x16 of Ctrl+V)
+    cleaned = "".join(ch for ch in (raw or "") if ch == "\n" or ch == "\t" or (ch.isprintable() or ch.isspace()))
+    key = cleaned.replace("﻿", "").strip().strip("\"'").strip()
     if not key:
         raise GarminError(
             "key_missing",

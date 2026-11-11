@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import json
 import os
-import re
 import shutil
 import subprocess
 from collections.abc import Callable, Mapping
@@ -273,30 +272,33 @@ def _run(run: Runner, argv: list[str]) -> subprocess.CompletedProcess[str]:
     return run(argv, shell=False, capture_output=True, text=True, timeout=30, check=False)
 
 
-_LIST_TIMEOUT_S = 90  # `mcp list` health-checks every registered server
-_ENTRY_RE = re.compile(rf"\s*{SERVER_NAME}(?=[:\s]|$)")  # exact name: not "garmin-connect", not "garminx"
+_GET_TIMEOUT_S = 60  # `mcp get` health-checks the one server asked for (a few seconds when it is ours)
 
 
-def _list_servers(run: Runner, binary: str, list_timeout: int = _LIST_TIMEOUT_S) -> str | None:
-    """Output of `<cli> mcp list`, or None if it could not be obtained."""
+def _get_server(run: Runner, binary: str) -> str | None:
+    """Details of the server named exactly `garmin` (`<cli> mcp get garmin`): "" if absent, None if the CLI failed.
+
+    Never use `mcp list` here: it health-checks every registered server (about 18 s with 60 of them).
+    """
     try:
         result = run(
-            [binary, "mcp", "list"], shell=False, capture_output=True, text=True, timeout=list_timeout, check=False
+            [binary, "mcp", "get", SERVER_NAME],
+            shell=False,
+            capture_output=True,
+            text=True,
+            timeout=_GET_TIMEOUT_S,
+            check=False,
         )
     except (OSError, subprocess.SubprocessError):
         return None
-    return result.stdout or "" if result.returncode == 0 else None
-
-
-def _find_entry(listing: str) -> str | None:
-    return next((line.strip() for line in listing.splitlines() if _ENTRY_RE.match(line)), None)
+    return (result.stdout or "") if result.returncode == 0 else ""
 
 
 def cli_entry(spec: ClientSpec, run: Runner, which: Which) -> str | None:
-    """The `mcp list` line of the server named exactly `garmin`, or None (absent or CLI unavailable)."""
+    """Details of the `garmin` server registered in a CLI client, or None (absent or CLI unavailable)."""
     binary = which(spec.cli) if spec.cli else None
-    listing = _list_servers(run, binary) if binary else None
-    return _find_entry(listing) if listing is not None else None
+    details = _get_server(run, binary) if binary else None
+    return details or None
 
 
 def configure_cli(
@@ -310,12 +312,11 @@ def configure_cli(
     binary = which(spec.cli) if spec.cli else None
     if binary is None:
         return WriteResult(spec.name, "skipped", f"'{spec.cli}' is not on PATH")
-    listing = _list_servers(run, binary)
-    if listing is None:
+    existing = _get_server(run, binary)
+    if existing is None:
         return WriteResult(
-            spec.name, "error", f"could not run `{spec.cli} mcp list`: add the server yourself (see the README)"
+            spec.name, "error", f"could not run `{spec.cli} mcp get`: add the server yourself (see the README)"
         )
-    existing = _find_entry(listing)
     if existing and PACKAGE not in existing and not (confirm_replace and confirm_replace(existing)):
         return WriteResult(spec.name, "skipped", f"kept the existing 'garmin' server in {spec.name}")
     try:

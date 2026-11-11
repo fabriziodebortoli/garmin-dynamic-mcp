@@ -162,12 +162,12 @@ class FakeRun:
     def __call__(self, argv, **kwargs):
         self.calls.append(argv)
         self.kwargs.append(kwargs)
-        if argv[1:3] == ["mcp", "list"]:
-            return subprocess.CompletedProcess(argv, 0, stdout=self.listing, stderr="")
+        if argv[1:3] == ["mcp", "get"]:  # exit 0 + details when the server exists, exit 1 when it does not
+            return subprocess.CompletedProcess(argv, 0 if self.listing else 1, stdout=self.listing, stderr="")
         return subprocess.CompletedProcess(argv, self.returncode, stdout="", stderr=self.stderr)
 
     def mutations(self):
-        return [c for c in self.calls if c[1:3] != ["mcp", "list"]]
+        return [c for c in self.calls if c[1:3] != ["mcp", "get"]]
 
 
 CLAUDE = ClientSpec(id="claude-code", name="Claude Code", kind="cli", cli="claude")

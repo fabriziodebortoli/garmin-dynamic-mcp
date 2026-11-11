@@ -129,7 +129,7 @@ keychain, so run `setup` once with `--clients none` first):
   "mcpServers": {
     "garmin": {
       "command": "uvx",
-      "args": ["garmin-dynamic-mcp==0.2.0"]
+      "args": ["garmin-dynamic-mcp==0.2.1"]
     }
   }
 }
@@ -138,7 +138,7 @@ keychain, so run `setup` once with `--clients none` first):
 VS Code uses the top-level key `servers` and needs `"type": "stdio"`. For Claude Code:
 
 ```bash
-claude mcp add garmin --scope user -- uvx garmin-dynamic-mcp==0.2.0
+claude mcp add garmin --scope user -- uvx garmin-dynamic-mcp==0.2.1
 ```
 
 If you do not want to use the keychain at all, set `GARMIN_API_KEY` in the server's `env` instead. That puts the key in
