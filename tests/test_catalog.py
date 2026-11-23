@@ -164,9 +164,9 @@ def test_expand_substitutes_and_url_encodes_path_params_and_splits_query():
     assert catalog.expand(activity, {"activityId": "12/3"}) == ("/activity-service/activity/12%2F3", {})
 
 
-def test_real_catalog_has_25_endpoints_3_sensitive():
+def test_real_catalog_has_endpoints_and_3_sensitive():
     catalog = load_catalog(allow_sensitive=True)
-    assert len(catalog.endpoints) == 25
+    assert len(catalog.endpoints) >= 25
     assert sum(1 for e in catalog.endpoints.values() if e.sensitive) == 3
     assert SEARCH in catalog.endpoints
     assert DOWNLOAD not in catalog.endpoints

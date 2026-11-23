@@ -65,8 +65,10 @@ def test_catalog_with_provenance_still_loads():
     assert "/x" in catalog.endpoints
 
 
-def test_committed_catalog_matches_garmin_spec_of_2026_11_10():
+def test_committed_catalog_has_provenance():
+    # Not pinned to one spec: the daily catalog watcher legitimately changes the catalog.
     data = json.loads(CATALOG_FILE.read_text(encoding="utf-8"))
     assert data["source_url"] == SWAGGER_PAGE
-    assert data["spec_sha256"] == "481dadc74076037e766f83b0a46aadf90066ea745832cc34924f4d26859833af"
-    assert len(data["endpoints"]) == 25
+    assert len(data["spec_sha256"]) == 64
+    assert data["generated_at"]
+    assert len(data["endpoints"]) >= 25
