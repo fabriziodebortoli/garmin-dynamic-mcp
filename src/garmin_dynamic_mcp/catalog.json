@@ -1,8 +1,18 @@
 {
   "source_url": "https://developer.garmin.com/gc-developer-program/personal/swagger-docs/",
-  "spec_sha256": "481dadc74076037e766f83b0a46aadf90066ea745832cc34924f4d26859833af",
-  "generated_at": "2026-11-10T21:04:08Z",
+  "spec_sha256": "1613851ee704e8843d6c35e7a8fb14680a303ffb98aa252d5a4e1b4bb7613d03",
+  "generated_at": "2026-11-25T15:44:52Z",
   "endpoints": [
+    {
+      "path": "/activity-service/activity/activityTypes/simple",
+      "summary": "Returns all of the activity types supported by the system, in a simplified format.",
+      "params": [],
+      "sensitive": false,
+      "verified": false,
+      "max_range_days": null,
+      "max_page_size": null,
+      "range_params": null
+    },
     {
       "path": "/activity-service/activity/{activityId}",
       "summary": "Retrieves the activity summary, metadata, measurements, and split summary information for the specified activity.",
@@ -395,6 +405,41 @@
       "range_params": null
     },
     {
+      "path": "/metrics-service/metrics/maxmet/daily/{startDate}/{endDate}",
+      "summary": "Get daily VO2 Max data for the given time range.",
+      "params": [
+        {
+          "name": "startDate",
+          "location": "path",
+          "required": true,
+          "type": "string",
+          "description": ""
+        },
+        {
+          "name": "endDate",
+          "location": "path",
+          "required": true,
+          "type": "string",
+          "description": ""
+        },
+        {
+          "name": "sport",
+          "location": "query",
+          "required": false,
+          "type": "array",
+          "description": "An optional list of sport types to filter the results. All valid sport types can be found in the FIT SDK. Examples include CYCLING, ROWING, RUNNING, WALKING, etc."
+        }
+      ],
+      "sensitive": false,
+      "verified": false,
+      "max_range_days": null,
+      "max_page_size": null,
+      "range_params": [
+        "startDate",
+        "endDate"
+      ]
+    },
+    {
       "path": "/nutrition-service/food/logs/{date}",
       "summary": "Retrieves the user's daily nutrition summary for a specific calendar date. This includes the user's nutrition goals, nutrients consumed, and discrete events for the day. The response can optionally include meal-by-meal breakdowns of calories and other nutrients consumed by the user on the given date.",
       "params": [
@@ -692,21 +737,21 @@
     },
     {
       "path": "/weight-service/weight/all/{startDate}/{endDate}",
-      "summary": "Retrieve all weight entries for a specified date range.",
+      "summary": "Retrieve all weight entries for a specified date range up to a maximum of 364 days.",
       "params": [
         {
           "name": "startDate",
           "location": "path",
           "required": true,
           "type": "string",
-          "description": "The start date(user's local calendar) of the range, inclusive. Format yyyy-MM-dd."
+          "description": "The start date (user's local calendar) of the range, inclusive. Format yyyy-MM-dd."
         },
         {
           "name": "endDate",
           "location": "path",
           "required": true,
           "type": "string",
-          "description": "The end date(user's local calendar) of the range, inclusive. Format yyyy-MM-dd."
+          "description": "The end date (user's local calendar) of the range, inclusive. Format yyyy-MM-dd."
         }
       ],
       "sensitive": false,
@@ -727,14 +772,14 @@
           "location": "path",
           "required": true,
           "type": "string",
-          "description": "The start date(user's local calendar) of the range, inclusive. Format yyyy-MM-dd."
+          "description": "The start date (user's local calendar) of the range, inclusive. Format yyyy-MM-dd."
         },
         {
           "name": "endDate",
           "location": "path",
           "required": true,
           "type": "string",
-          "description": "The end date(user's local calendar) of the range, inclusive. Format yyyy-MM-dd."
+          "description": "The end date (user's local calendar) of the range, inclusive. Format yyyy-MM-dd."
         },
         {
           "name": "includeAll",
