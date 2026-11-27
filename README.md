@@ -2,6 +2,8 @@
 
 # Garmin Dynamic MCP
 
+> **This project is no longer maintained.** I now use [garmin-personal-mcp](https://github.com/Mason-Levyy/garmin-personal-mcp) by Mason Levy, which is built on Garmin's official Personal API and is actively maintained. I recommend switching to it.
+
 [![CI](https://github.com/fabriziodebortoli/garmin-dynamic-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/fabriziodebortoli/garmin-dynamic-mcp/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/garmin-dynamic-mcp)](https://pypi.org/project/garmin-dynamic-mcp/)
 [![Python](https://img.shields.io/pypi/pyversions/garmin-dynamic-mcp)](https://pypi.org/project/garmin-dynamic-mcp/)
